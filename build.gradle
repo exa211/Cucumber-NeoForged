@@ -90,11 +90,24 @@ minecraft {
         client {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
+
+            arg '-mixin.config=cucumber.mixins.json'
+
+            mods {
+                cucumber {
+                    source sourceSets.main
+                }
+            }
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
+            arg '-mixin.config=cucumber.mixins.json'
+            mods {
+                cucumber {
+                    source sourceSets.main
+                }
+            }
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -170,6 +183,8 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.neoforged:forge:${minecraft_version}-${neo_version}"
 
+    annotationProcessor "org.spongepowered:mixin:${mixin_processor_version}:processor"
+
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
@@ -189,6 +204,14 @@ dependencies {
     implementation fg.deobf("dev.latvian.mods:rhino-forge:${rhino_version}")
     implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
     compileOnly fg.deobf("com.almostreliable.mods:almostunified-forge:${almostunified_version}")
+}
+
+mixin {
+    add sourceSets.main, 'cucumber.refmap.json'
+    config 'cucumber.mixins.json'
+
+    debug.verbose = true
+    debug.export = true
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
